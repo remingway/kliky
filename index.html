@@ -110,7 +110,7 @@
     <table class="board">
       <tbody>
         <tr>
-          <td class="name" id="NameMain"><div class="name-badge-container" id="user-name-123">Name</div></td>
+          <td class="name" id="NameMain"><div id="NameMainContainer" class="name-badge-container">Name</div></td>
           <td class="value-container">
             <div class="label">Debt</div>
             <div class="value"><span id="DebtMain">-</span></div>
@@ -747,33 +747,28 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 
 
-/* Kontejner pro jméno a jeho odznaky */
 .name-badge-container {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 20px; /* Prostor pro obíhající odznaky */
+    width: 100%;
 }
 
-/* Styl odznaku */
 .badge {
     position: absolute;
-    width: 25px;
-    height: 25px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 10px;
-    color: white;
-    font-weight: bold;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-    z-index: 1;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
     animation: orbit linear infinite;
+    pointer-events: none; /* Aby nebránily klikání */
 }
 
-/* Definuje různé dráhy a rychlosti */
 @keyframes orbit {
     from { transform: rotate(0deg) translateX(var(--distance)) rotate(0deg); }
     to { transform: rotate(360deg) translateX(var(--distance)) rotate(-360deg); }
@@ -804,33 +799,28 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 
 <script>
-  /**
- * Přidá badge k elementu jména
- * @param {string} parentId - ID elementu, ke kterému se badge přidá
- * @param {number} streak - Počet dní streaku
- */
-function addBadgeToName(parentId, streak) {
+  function addBadge(parentId, streak) {
     const parent = document.getElementById(parentId);
     if (!parent) return;
 
     const badge = document.createElement('div');
     badge.className = 'badge';
     
-    // Škálování podle streaku
-    let color = "#444";
-    if (streak >= 15) { color = "#ffca28"; badge.innerText = "🔥"; } // 15 dní
-    if (streak >= 30) { color = "#ff4081"; badge.innerText = "💎"; } // 30 dní
-    if (streak >= 60) { color = "#7c4dff"; badge.innerText = "👑"; } // 60 dní
-
-    badge.style.background = color;
+    // Vizuál pro 15 dní
+    badge.innerText = "🔥";
+    badge.style.background = "linear-gradient(135deg, #FF512F, #DD2476)";
     
-    // Náhodná vzdálenost od jména (40px až 60px)
-    const distance = 40 + Math.random() * 20;
+    // Nastavení dráhy
+    const distance = 45; // Vzdálenost od jména v pixelech
     badge.style.setProperty('--distance', `${distance}px`);
-    
-    // Náhodná rychlost animace (8s až 15s pro každé kolo)
-    badge.style.animationDuration = `${8 + Math.random() * 7}s`;
+    badge.style.animationDuration = `10s`;
 
     parent.appendChild(badge);
 }
+
+// Spustíme test po načtení stránky
+window.addEventListener('load', () => {
+    // Simulace dosažení 15 dní pro NameMain
+    addBadge('NameMainContainer', 15);
+});
 </script>
