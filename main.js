@@ -2,7 +2,8 @@ const API_URL_KLIKY = "https://kliky.remingway.cz/api/kliky";
 let allUsers = [];
 let allUsersData = [];
 
-let MyName = window.location.pathname.split('/')[1].toLowerCase();;
+let MyName = window.location.pathname.split('/')[1].toLowerCase();
+MyName = "remi";
 
 if (MyName) {
     localStorage.setItem('savedUser', MyName);
