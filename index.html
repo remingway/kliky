@@ -1,0 +1,836 @@
+<meta charset="UTF-8">
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kliky">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="manifest" href="manifest.json">
+
+<div id="debug-log" style="display:none; position:fixed; top:10px; left:40%; width:20%; background:black; color:lime; font-size:20px; height:150px; overflow-y:scroll; z-index:9999;"></div>
+
+<div id="error-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#121212; color:white; z-index:999999; flex-direction:column; justify-content:center; align-items:center; font-size:24px; font-weight:bold; font-family:sans-serif;">
+    <p>❌ Neznám tě, jdi pryč ❌</p>
+</div>
+
+<div id="menu-btn" onclick="toggleMenu()">☰</div>
+
+<div id="settings-menu" class="hidden">
+  <div class="menu-content">
+    <h2 style="color: white; margin-top: 0;">Nastavení</h2>
+
+    
+
+    <h4 id="nadpis-install"style="color: white; margin-bottom: 10px;">Instalace aplikace</h4>
+    <button id="btn-install" class="menu-item" style="display:none;">Instalovat aplikaci</button>
+    <div id="install-hint" class="install-hint">V menu prohlížeče klikni na přidat na plochu (asi já nevím).</div>
+    <hr style="border: 0; border-top: 1px solid #444; margin: 15px 0;">
+
+
+
+
+
+<h4 style="color: white; margin-bottom: 10px;">Notifikace</h4>
+<button id="btn-enable-notify" class="menu-item" onclick="toggleNotifikace(MyName)">Zapnout notifikace</button>
+
+<div class="option notifi" onclick="toggleInfo('info-daily')">
+    <span>Denní přehled ℹ️</span>
+    <label class="switch">
+        <input type="checkbox" id="n-daily" onchange="updateSettings('daily', this.checked); event.stopPropagation();" />
+        <span class="slider"></span>
+    </label>
+</div>
+<div id="info-daily" class="info-text">Pošle ti každý den notifikaci s informací, kolik jsi udělal kliků a kolik ti ještě zbývá.</div>
+
+<div class="option notifi" onclick="toggleInfo('info-rivals')">
+    <span>Soupeři ℹ️</span>
+    <label class="switch">
+        <input type="checkbox" id="n-rivals" onchange="updateSettings('rivals', this.checked); event.stopPropagation();" />
+        <span class="slider"></span>
+    </label>
+</div>
+<div id="info-rivals" class="info-text">Pošle ti notifikaci pokaždé, když tě někdo předběhne v dnešním počtu kliků.</div>
+
+<div class="option notifi" style="opacity: 0.5; cursor: not-allowed">
+    <span>Bude</span><!-- výzvy -->
+    <label class="switch">
+        <input type="checkbox" id="n-challenges" disabled />
+        <span class="slider"></span>
+    </label>
+</div>
+<div class="option notifi" style="opacity: 0.5; cursor: not-allowed">
+    <span>Bude</span><!-- rekordy -->
+    <label class="switch">
+        <input type="checkbox" id="n-records" disabled />
+        <span class="slider"></span>
+    </label>
+</div>
+    <hr style="border: 0; border-top: 1px solid #444; margin: 15px 0;">
+
+    <h4 style="color: white; margin-bottom: 10px;">Další nastavení</h4>
+    <div class="option">
+      <span>Zobrazovat "All time high"</span>
+      <label class="switch"><input type="checkbox" id="toggle-toast" checked onchange="toggleToastVisibility(this.checked)"><span class="slider"></span></label>
+    </div>
+
+<hr style="border: 0; border-top: 1px solid #444; margin: 15px 0;">
+
+    <h4>hodnoty tlačítek</h4>
+    <div class="settings-grid">
+  <input type="number" id="btn1" value="10" onchange="saveSettings(1)">
+  <input type="number" id="btn2" value="15" onchange="saveSettings(2)">
+  <input type="number" id="btn3" value="20" onchange="saveSettings(3)">
+</div>
+<hr style="border: 0; border-top: 1px solid #444; margin: 15px 0;">
+<h4 style="color: white; margin-top: 20px; margin-bottom: 10px;">Našel si chybu? v2.2</h4>
+<div class="install-hint" style="margin-bottom: 15px;">
+    Našel jsi chybu nebo máš nápad? <br>
+    <a href="https://m.me/remingwayCZ" target="_blank" style="color: #ffca28; font-weight: bold; text-decoration: none;">Napiš mi na Messenger</a>
+</div>
+
+
+
+  </div>
+</div>
+
+<div class="boards-wrapper">
+  <div id="LoadovaciOkno">
+    <div class="kolecko"></div>
+  </div>
+
+  <div id="leaderboard-scroll-wrapper" style="overflow: hidden;">
+    <div id="leaderboard-list">
+      </div>
+  </div>
+</div>
+
+<div style="display: none;">
+  <div id="board-template-main" class="score-board large">
+    <table class="board">
+      <tbody>
+        <tr>
+          <td class="name" id="NameMain"><div class="name-badge-container" id="user-name-123">Name</div></td>
+          <td class="value-container">
+            <div class="label">Debt</div>
+            <div class="value"><span id="DebtMain">-</span></div>
+          </td>
+          <td class="value-container">
+            <div class="label">Today</div>
+            <div class="value"><span id="TodayMain">-</span> <span class="pre" id="YesterdayMain">-</span></div>
+          </td>
+          <td class="value-container">
+            <div class="label">Month</div>
+            <div class="value"><span id="MonthMain">-</span> <span class="pre" id="PreMonthMain">-</span></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="board-template-user" class="score-board medium">
+    <table class="board">
+      <tbody>
+        <tr>
+          <td class="name"><span class="tpl-name">Name</span></td>
+          <td class="value-container">
+            <div class="label">Debt</div>
+            <div class="value"><span class="tpl-debt">-</span></div>
+          </td>
+          <td class="value-container">
+            <div class="label">Today</div>
+            <div class="value"><span class="tpl-today">-</span> <span class="pre tpl-yesterday">-</span></div>
+          </td>
+          <td class="value-container">
+            <div class="label">Month</div>
+            <div class="value"><span class="tpl-month">-</span> <span class="pre tpl-premonth">-</span></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="inputBoard" class="input-board">
+  <div class="stats-row">
+    <div id="boardStreakMain" class="corner-board">
+      <div class="streak-fireworks" id="streakFireworks"></div>
+      <table class="board">
+        <tbody>
+          <tr>
+            <td class="value-container">
+              <div class="label">Streak</div>
+              <div class="value"><span id="StreakMain">-</span></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <div id="boardDebtMain" class="corner-board" style="background: transparent; box-shadow: none;">
+      <div id="challengeContainer" class="challenge-container">
+        <span id="closeChallenges" class="close-challenges" onclick="toggleChallenges(event, false)">×</span>
+        <button id="mainChallengeBtn" class="challenge-btn" onclick="toggleChallenges(event, true)">Výzvy</button>
+        
+        <div id="menuStep1" class="challenge-menu" style="display: none;">
+          <button class="menu-item" onclick="goToStep(2)">DUEL</button>
+          <button class="menu-item" onclick="console.log('Ladder')">LADDER</button>
+        </div>
+        
+        <div id="menuStep2" class="challenge-menu" style="display: none;">
+          <div class="menu-title">Duel</div>
+          <p style="color: white; text-align: justify; margin: 0 0 10px 0;">Vyber soupeře a počet kliků, každý z Vás musí dnes udělat tento počet kliků navíc ke stávajícím, pokud je neudělá přičte se mu do dluhu dvojnásobek.</p>
+          <button class="menu-item" onclick="goToStep(3)">OK</button>
+        </div>
+        
+        <div id="menuStep3" class="challenge-menu" style="display: none;">
+          <div class="menu-title">Vyber soupeře</div>
+          <div id="opponentList">&nbsp;</div>
+        </div>
+        
+        <div id="menuStep4" class="challenge-menu" style="display: none;">
+          <div class="menu-title">počet kliků</div>
+          <p style="line-height: 1; margin: 0 0 10px 0; align-self: center;">přetažením uprav</p>
+          <div id="duel-scroll-value" class="scroll-input-value">20</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="Quick">
+  <button id="sendButton1" onclick="SendPushups(10)">10</button>
+  
+  <div id="selector-container">
+    <div class="line line-top"></div>
+    <div id="numbers-track"></div>
+    <div class="line line-bottom"></div>
+  </div>
+  
+  <button id="sendButton3" onclick="SendPushups(20)">20</button>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+</div>
+</div>
+
+<div id="stats-notification-container" class="stats-toast-mini-container">
+  <div id="stats-toast" class="stats-toast-mini">
+    <span class="toast-icon-mini">🏆</span>
+    <span id="toast-text" class="toast-content-mini">...</span>
+  </div>
+</div>
+
+<!-- badge tameplate -->
+<div id="badge-library" style="display: none;">
+  <div class="badge-template" id="badge-master" style="background: linear-gradient(135deg, #FF512F, #DD2476);">
+    <div class="shape-star"></div>
+    <span class="label">1000</span>
+  </div>
+  
+  <div class="badge-template" id="badge-beginner" style="background: linear-gradient(135deg, #84fab0, #8fd3f4);">
+    <div class="shape-triangle"></div>
+    <span class="label">100</span>
+  </div>
+</div>
+<!-- END badge tameplate END -->
+
+<style>
+body {
+  margin: 0;
+  background: #121212;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+.boards-wrapper {
+  height: 90dvh; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 160px;
+  box-sizing: border-box;
+}
+
+#leaderboard-scroll-wrapper {
+  width: 100%;
+  height: 440px;
+  position: relative;
+  overflow: hidden;
+}
+
+#leaderboard-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  padding-top: calc(220px - 38px);  
+  padding-bottom: calc(220px - 38px);
+  box-sizing: border-box;
+}
+
+.score-board {
+  background: #1e1e1e;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  transition: background-color 300ms ease;
+  flex-shrink: 0;
+  height: 76px;
+  width: 95%;
+  box-sizing: border-box;
+}
+
+.score-board.small  { width: 85%; }
+.score-board.medium { width: 90%; }
+.score-board.large  { width: 95%; }
+
+.board {
+    width: 100%;
+    table-layout: fixed; /* KLÍČOVÉ: Tabulka bude mít fixní sloupce bez ohledu na obsah */
+    border-collapse: collapse;
+}
+
+.board td {
+    padding: 10px 5px;
+    text-align: center;
+    color: #eee;
+    border-right: 1px solid #333;
+    overflow: hidden;      /* Skryje přebytečný text */
+    white-space: nowrap;   /* Zabrání zalamování */
+    text-overflow: ellipsis; /* Přidá "..." pokud je jméno moc dlouhé */
+    box-sizing: border-box;
+}
+
+/* Definice pevných šířek sloupců */
+.board td.name {
+    width: 30%;
+    font-size: 16px; 
+    font-weight: bold;
+}
+
+.value-container {
+    width: 23%; /* Ostatní 3 sloupce si rozdělí zbytek (cca 65% / 3) */
+}
+
+.board td:last-child, .board td:first-child {
+    border-right: none;
+}
+
+.value-container .label {
+  font-size: 11px;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+
+.value {
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+}
+
+.pre {
+  font-size: 11px;
+  color: #888;
+  margin-left: 0px;
+}
+
+.input-board {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 200;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.corner-board {
+  width: 48%;
+  background: #1e1e1e;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  position: relative;
+}
+
+.corner-board td {
+  padding: 12px;
+  text-align: center;
+  color: #eee;
+}
+
+.corner-board .label {
+  font-size: 11px;
+  color: #9a9a9a;
+  text-transform: uppercase;
+}
+
+.Quick {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+  background: #2a2a2a;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+}
+
+.Quick button {
+  width: 75px;
+  padding: 15px 0;
+  font-size: 22px;
+  font-weight: bold;
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.7);
+}
+
+.loading-overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(26, 26, 26, 1);
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  z-index: 10;
+}
+
+.spinner, .kolecko {
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #555;
+  border-top: 4px solid #fff;
+}
+
+#LoadovaciOkno {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 300;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s ease;
+  background-color: #121212;
+}
+
+.kolecko {
+  width: 60px;
+  height: 60px;
+  border: 6px solid #ccc;
+  border-top-color: #333;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.streak-fireworks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.firework {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: firework 1200ms ease-out forwards;
+}
+
+@keyframes firework {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)) scale(0.3); opacity: 0; }
+}
+
+.stats-toast-mini-container {
+  position: fixed;
+  left: 5%;                /* Vycentrování na střed */
+  top: -100px;              /* Startuje mimo obrazovku nahoře */
+  z-index: 10000;
+  transition: top 0.6s cubic-bezier(0.25, 1, 0.5, 1); /* Animace na top */
+}
+
+.stats-toast-mini-container.show {
+  top: 15px;                /* Cílová pozice těsně pod horním okrajem */
+}
+
+.stats-toast-mini {
+  background: rgba(25, 25, 25, 0.9);
+  border-bottom: 2px solid #ffca28;
+  color: white;
+  padding: 8px 16px;        /* Mírně upravený padding pro lepší vzhled nahoře */
+  border-radius: 20px;      /* Zakulacený toast vypadá nahoře lépe */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.toast-icon-mini {
+  font-size: 14px;
+}
+
+.toast-content-mini {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #ddd;
+}
+
+.challenge-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #1e1e1e;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 100;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+.challenge-container.is-open {
+  height: auto;
+  max-height: 500px;
+  background: #252525;
+}
+
+.challenge-btn {
+  width: 85%;
+  padding: 10px;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.challenge-menu {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  width: 85%;
+  margin-top: 25px;
+  padding: 20px;
+}
+
+.menu-item {
+  background: #333;
+  color: white;
+  border: 1px solid #444;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%; background: #444; color: white; border: none;
+  padding: 10px; border-radius: 8px; margin-bottom: 15px; cursor: pointer;
+}
+
+.close-challenges {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 26px;
+  color: #888;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.challenge-container.is-open .close-challenges {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.menu-title {
+  font-size: 11px;
+  color: #888;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.scroll-input-value {
+  text-align: center;
+  align-self: center;
+  width: 75px;
+  padding: 15px 0;
+  font-size: 22px;
+  font-weight: bold;
+  background: #444;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.7);
+}
+
+div#opponentList {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+}
+
+button#mainChallengeBtn {
+  display: none !important;
+}
+
+#menu-btn {
+  position: fixed; top: 15px; right: 15px;
+  font-size: 28px; color: white; z-index: 9999; cursor: pointer;
+  background: #2a2a2a; padding: 5px 12px; border-radius: 10px;
+}
+
+#settings-menu {
+  position: fixed; 
+  top: 60px; 
+  right: 15px;
+  width: 250px; 
+  /* ZMĚNY ZDE: */
+  max-height: calc(80dvh); /* Menu nebude vyšší než obrazovka mínus rezerva */
+  overflow-y: auto;              /* Přidá scrollovací lištu, pokud je obsah delší */
+  /* Zbytek tvých stylů */
+  background: #1e1e1e; 
+  border: 1px solid #333;
+  border-radius: 14px; 
+  box-shadow: 0 0px 0px 2000px rgba(0,0,0,0.7);
+  z-index: 9998; 
+  padding: 15px; 
+  transition: transform 0.2s, opacity 0.2s;
+  color: white;
+  -webkit-overflow-scrolling: touch; /* Pro plynulé scrollování na iPhonech */
+}
+#settings-menu.hidden { transform: scale(0.95); opacity: 0; pointer-events: none; }
+.option { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #ccc; }
+
+.switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #444; transition: .4s; border-radius: 22px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #ffca28; }
+input:checked + .slider:before { transform: translateX(18px); }
+
+.install-hint { font-size: 11px; color: #888; text-align: center; }
+
+
+
+.menu-content h2, .menu-content h4 {
+  margin: 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.option span {
+  font-size: 14px;
+}
+
+.install-hint {
+  font-size: 12px;
+  color: #bbb;
+  text-align: center;
+  line-height: 1.4;
+}
+#selector-container {
+    position: relative;
+    width: 120px;
+    height: 55px;
+    background: #444;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    touch-action: none;
+    user-select: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.7);
+}
+.line { position: absolute; left: 50%; transform: translateX(-50%); width: 2px; height: 12px; background: #ffca28; z-index: 10; pointer-events: none; }
+.line-top { top: 6px; }
+.line-bottom { bottom: 6px; }
+#numbers-track { display: flex; height: 100%; align-items: center; will-change: transform; cursor: grab; }
+.number { flex: 0 0 40px; text-align: center; font-size: 20px; font-weight: bold; color: #fff; display: flex; justify-content: center; align-items: center; }
+.number.active { color: #ffca28; }
+
+.settings-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.settings-grid input {
+    width: 30%; /* Rozdělí prostor rovnoměrně na tři */
+    background: #333;
+    color: white;
+    border: 1px solid #444;
+    padding: 10px 5px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    box-sizing: border-box; /* Aby padding nerozbil šířku */
+}
+
+/* Efekt při kliknutí do inputu */
+.settings-grid input:focus {
+    outline: none;
+    border-color: #ffca28;
+    background: #3a3a3a;
+}
+
+.info-text {
+    display: none; /* Skryté defaultně */
+    font-size: 11px;
+    color: #ffca28; /* Barva ladící s tvým žlutým akcentem */
+    background: #2a2a2a;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    margin-top: -10px;
+    border-left: 2px solid #ffca28;
+}
+
+.option.notifi {
+    cursor: pointer; /* Naznačí, že je řádek klikatelný */
+}
+
+
+
+
+
+
+
+
+
+
+/* Kontejner pro jméno a jeho odznaky */
+.name-badge-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px; /* Prostor pro obíhající odznaky */
+}
+
+/* Styl odznaku */
+.badge {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    z-index: 1;
+    animation: orbit linear infinite;
+}
+
+/* Definuje různé dráhy a rychlosti */
+@keyframes orbit {
+    from { transform: rotate(0deg) translateX(var(--distance)) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(var(--distance)) rotate(-360deg); }
+}
+
+
+
+
+
+
+
+</style>
+<script>
+  function toggleInfo(id) {
+    const el = document.getElementById(id);
+    if (el.style.display === "block") {
+        el.style.display = "none";
+    } else {
+        // Skryje ostatní, aby to nevypadalo přeplácaně (volitelné)
+        document.querySelectorAll('.info-text').forEach(item => item.style.display = 'none');
+        el.style.display = "block";
+    }
+}
+
+</script>
+<script src="main.js"></script>
+<!--<script src="badges.js"></script>-->
+
+
+<script>
+  /**
+ * Přidá badge k elementu jména
+ * @param {string} parentId - ID elementu, ke kterému se badge přidá
+ * @param {number} streak - Počet dní streaku
+ */
+function addBadgeToName(parentId, streak) {
+    const parent = document.getElementById(parentId);
+    if (!parent) return;
+
+    const badge = document.createElement('div');
+    badge.className = 'badge';
+    
+    // Škálování podle streaku
+    let color = "#444";
+    if (streak >= 15) { color = "#ffca28"; badge.innerText = "🔥"; } // 15 dní
+    if (streak >= 30) { color = "#ff4081"; badge.innerText = "💎"; } // 30 dní
+    if (streak >= 60) { color = "#7c4dff"; badge.innerText = "👑"; } // 60 dní
+
+    badge.style.background = color;
+    
+    // Náhodná vzdálenost od jména (40px až 60px)
+    const distance = 40 + Math.random() * 20;
+    badge.style.setProperty('--distance', `${distance}px`);
+    
+    // Náhodná rychlost animace (8s až 15s pro každé kolo)
+    badge.style.animationDuration = `${8 + Math.random() * 7}s`;
+
+    parent.appendChild(badge);
+}
+</script>
