@@ -112,7 +112,7 @@
         <tr>
           <td class="name" id="NameMain"><div id="NameMainContainer" class="name-badge-container">Name</div></td>
           <td class="value-container">
-            <div class="label">DDebt</div>
+            <div class="label">Debt</div>
             <div class="value"><span id="DebtMain">-</span></div>
           </td>
           <td class="value-container">
@@ -134,7 +134,7 @@
         <tr>
           <td class="name"><span class="tpl-name">Name</span></td>
           <td class="value-container">
-            <div class="label">DDebt</div>
+            <div class="label">Debt</div>
             <div class="value"><span class="tpl-debt">-</span></div>
           </td>
           <td class="value-container">
@@ -818,9 +818,5 @@ input:checked + .slider:before { transform: translateX(18px); }
     parent.appendChild(badge);
 }
 
-// Spustíme test po načtení stránky
-window.addEventListener('load', () => {
-    // Simulace dosažení 15 dní pro NameMain
-    addBadge('NameMainContainer', 15);
-});
+addBadge('NameMainContainer', 15);
 </script>
