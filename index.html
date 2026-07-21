@@ -746,17 +746,28 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 
 
-
-.name-badge-container {
+/* Kontejner hned vedle jména, flexbox zajistí správné uspořádání */
+.board td.name {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Mezera mezi jménem a badgem */
     position: relative;
+    overflow: visible !important;
+}
+
+/* Zrušíme starý kontejner, použijeme přímo badge uvnitř flexboxu */
+.name-badge-container {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    overflow: visible !important;
+    pointer-events: none;
 }
 
+/* Samotný badge s jemným pohupováním */
 .badge {
-    position: absolute;
+    position: relative; /* Už žádné absolute, drží se flexboxu */
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -764,45 +775,20 @@ input:checked + .slider:before { transform: translateX(18px); }
     align-items: center;
     justify-content: center;
     font-size: 10px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    animation: orbit linear infinite;
-    pointer-events: none; /* Aby nebránily klikání */
-}
-
-@keyframes orbit {
-    from { transform: rotate(0deg) translateX(var(--distance)) rotate(0deg); }
-    to { transform: rotate(360deg) translateX(var(--distance)) rotate(-360deg); }
-}
-.name-badge-container {
-    position: absolute;
-    inset: -4px; /* Mírně přesahuje ven z buňky, aby badge jezdil okolo ní */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     pointer-events: none;
-    overflow: visible !important;
+    
+    /* Jemný pohyb o pouhý 1px v náhodných směrech */
+    animation: microFloat 3s ease-in-out infinite;
 }
 
-/* Samotný badge – nyní využije klíčové snímky pro obdélníkový pohyb */
-.badge {
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-    pointer-events: none;
-    /* Spustí animaci po obvodu obdélníku */
-    animation: rectOrbit 12s linear infinite; 
-}
-
-/* Definice pohybu po obvodu obdélníku (procentuální pozice top/left) */
-@keyframes rectOrbit {
-    0%   { top: -6px; left: 0%; }     /* Horní hrana - zleva doprava */
-    25%  { top: -6px; left: 100%; }   /* Pravý horní roh */
-    50%  { top: calc(100% - 6px); left: 100%; } /* Dolní hrana - zprava doleva */
-    75%  { top: calc(100% - 6px); left: 0%; }   /* Levý dolní roh */
-    100% { top: -6px; left: 0%; }     /* Návrat na start */
+/* Animace jemného pohupování na místě (v rozmezí cca 1px) */
+@keyframes microFloat {
+    0%   { transform: translate(0px, 0px); }
+    25%  { transform: translate(0.8px, -0.8px); }
+    50%  { transform: translate(-0.5px, 0.8px); }
+    75%  { transform: translate(-0.8px, -0.5px); }
+    100% { transform: translate(0px, 0px); }
 }
 
 
