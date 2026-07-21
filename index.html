@@ -746,33 +746,35 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 
 
-/* 1. Vracíme buňku do původního stavu, jen přidáme position: relative kvůli absolutnímu badge */
+/* Buňka tabulky zůstane zcela nedotčená */
 .board td.name {
     width: 30%;
     font-size: 16px;
     font-weight: bold;
-    position: relative; /* Důležité: absolutní badge se bude chytat této buňky */
     overflow: visible !important;
 }
 
-/* 2. Kontejner pro badge napravo od jména */
-.name-badge-container {
+/* Obal, který drží jméno a badge pohromadě jako jeden blok */
+.name-wrapper {
+    position: relative;
+    display: inline-block; /* Drží se těsně kolem jména */
+    overflow: visible !important;
+}
+
+/* Kontejner badge se napojí absolutně na pravý okraj tohoto obalu */
+.name-badge-container, .user-badge-wrapper {
     position: absolute;
     top: 50%;
-    /* Připneme ho na pravou stranu buňky s malou rezervou (např. 10px od pravého okraje) */
-    right: 10px; 
-    transform: translateY(-50%); /* Vycentrování přesně na střed řádku na výšku */
-    width: auto;
-    height: auto;
+    left: 100%; /* Začíná přesně tam, kde končí jméno */
+    transform: translateY(-50%);
+    margin-left: 6px; /* Malá mezera 6px od textu jména */
     display: flex;
     align-items: center;
-    justify-content: center;
-    overflow: visible !important;
     pointer-events: none;
-    z-index: 5;
+    overflow: visible !important;
 }
 
-/* 3. Samotný badge s jemným pohupováním (v rozmezí 1px) */
+/* Samotný badge s jemným mikropohybem 1px */
 .badge {
     position: relative;
     width: 20px;
@@ -785,16 +787,15 @@ input:checked + .slider:before { transform: translateX(18px); }
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     pointer-events: none;
     
-    /* Jemný mikropohyb o 1px na místě */
+    /* Velmi jemný pohyb o cca 1px */
     animation: microFloat 3s ease-in-out infinite;
 }
 
-/* Animace jemného vznášení */
 @keyframes microFloat {
     0%   { transform: translate(0px, 0px); }
-    25%  { transform: translate(0.8px, -0.8px); }
-    50%  { transform: translate(-0.5px, 0.8px); }
-    75%  { transform: translate(-0.8px, -0.5px); }
+    25%  { transform: translate(0.5px, -0.5px); }
+    50%  { transform: translate(-0.3px, 0.5px); }
+    75%  { transform: translate(-0.5px, -0.3px); }
     100% { transform: translate(0px, 0px); }
 }
 
