@@ -746,28 +746,35 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 
 
-/* Kontejner hned vedle jména, flexbox zajistí správné uspořádání */
+/* 1. Vracíme buňku do původního stavu, jen přidáme position: relative kvůli absolutnímu badge */
 .board td.name {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px; /* Mezera mezi jménem a badgem */
-    position: relative;
+    width: 30%;
+    font-size: 16px;
+    font-weight: bold;
+    position: relative; /* Důležité: absolutní badge se bude chytat této buňky */
     overflow: visible !important;
 }
 
-/* Zrušíme starý kontejner, použijeme přímo badge uvnitř flexboxu */
+/* 2. Kontejner pro badge napravo od jména */
 .name-badge-container {
-    display: inline-flex;
+    position: absolute;
+    top: 50%;
+    /* Připneme ho na pravou stranu buňky s malou rezervou (např. 10px od pravého okraje) */
+    right: 10px; 
+    transform: translateY(-50%); /* Vycentrování přesně na střed řádku na výšku */
+    width: auto;
+    height: auto;
+    display: flex;
     align-items: center;
     justify-content: center;
     overflow: visible !important;
     pointer-events: none;
+    z-index: 5;
 }
 
-/* Samotný badge s jemným pohupováním */
+/* 3. Samotný badge s jemným pohupováním (v rozmezí 1px) */
 .badge {
-    position: relative; /* Už žádné absolute, drží se flexboxu */
+    position: relative;
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -778,11 +785,11 @@ input:checked + .slider:before { transform: translateX(18px); }
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     pointer-events: none;
     
-    /* Jemný pohyb o pouhý 1px v náhodných směrech */
+    /* Jemný mikropohyb o 1px na místě */
     animation: microFloat 3s ease-in-out infinite;
 }
 
-/* Animace jemného pohupování na místě (v rozmezí cca 1px) */
+/* Animace jemného vznášení */
 @keyframes microFloat {
     0%   { transform: translate(0px, 0px); }
     25%  { transform: translate(0.8px, -0.8px); }
@@ -790,7 +797,6 @@ input:checked + .slider:before { transform: translateX(18px); }
     75%  { transform: translate(-0.8px, -0.5px); }
     100% { transform: translate(0px, 0px); }
 }
-
 
 
 
