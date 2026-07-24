@@ -309,6 +309,8 @@ body {
     width: 30%;
     font-size: 16px; 
     font-weight: bold;
+    position: relative; /* Důležité pro pozicování badge v buňce */
+    overflow: visible !important;
 }
 
 .value-container {
@@ -632,10 +634,8 @@ button#mainChallengeBtn {
   top: 60px; 
   right: 15px;
   width: 250px; 
-  /* ZMĚNY ZDE: */
-  max-height: calc(80dvh); /* Menu nebude vyšší než obrazovka mínus rezerva */
-  overflow-y: auto;              /* Přidá scrollovací lištu, pokud je obsah delší */
-  /* Zbytek tvých stylů */
+  max-height: calc(80dvh);
+  overflow-y: auto;              
   background: #1e1e1e; 
   border: 1px solid #333;
   border-radius: 14px; 
@@ -644,7 +644,7 @@ button#mainChallengeBtn {
   padding: 15px; 
   transition: transform 0.2s, opacity 0.2s;
   color: white;
-  -webkit-overflow-scrolling: touch; /* Pro plynulé scrollování na iPhonech */
+  -webkit-overflow-scrolling: touch;
 }
 #settings-menu.hidden { transform: scale(0.95); opacity: 0; pointer-events: none; }
 .option { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; color: #ccc; }
@@ -657,8 +657,6 @@ input:checked + .slider { background-color: #ffca28; }
 input:checked + .slider:before { transform: translateX(18px); }
 
 .install-hint { font-size: 11px; color: #888; text-align: center; }
-
-
 
 .menu-content h2, .menu-content h4 {
   margin: 10px 0;
@@ -704,7 +702,7 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 
 .settings-grid input {
-    width: 30%; /* Rozdělí prostor rovnoměrně na tři */
+    width: 30%;
     background: #333;
     color: white;
     border: 1px solid #444;
@@ -712,10 +710,9 @@ input:checked + .slider:before { transform: translateX(18px); }
     border-radius: 8px;
     text-align: center;
     font-size: 16px;
-    box-sizing: border-box; /* Aby padding nerozbil šířku */
+    box-sizing: border-box;
 }
 
-/* Efekt při kliknutí do inputu */
 .settings-grid input:focus {
     outline: none;
     border-color: #ffca28;
@@ -723,9 +720,9 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 
 .info-text {
-    display: none; /* Skryté defaultně */
+    display: none;
     font-size: 11px;
-    color: #ffca28; /* Barva ladící s tvým žlutým akcentem */
+    color: #ffca28;
     background: #2a2a2a;
     padding: 8px;
     border-radius: 6px;
@@ -735,16 +732,8 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 
 .option.notifi {
-    cursor: pointer; /* Naznačí, že je řádek klikatelný */
+    cursor: pointer;
 }
-
-
-
-
-
-
-
-
 
 /* --- BADGE STYLY (Čisté zarovnání a jemný pohyb) --- */
 .name-badge-container {
@@ -784,25 +773,18 @@ input:checked + .slider:before { transform: translateX(18px); }
 }
 </style>
 
-
-
-</style>
 <script>
   function toggleInfo(id) {
     const el = document.getElementById(id);
     if (el.style.display === "block") {
         el.style.display = "none";
     } else {
-        // Skryje ostatní, aby to nevypadalo přeplácaně (volitelné)
         document.querySelectorAll('.info-text').forEach(item => item.style.display = 'none');
         el.style.display = "block";
     }
 }
-
 </script>
 <script src="main.js"></script>
-<!--<script src="badges.js"></script>-->
-
 
 <script>
   function addBadges(parentId) {
