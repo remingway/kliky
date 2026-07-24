@@ -746,50 +746,34 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 
 
-/* Buňka tabulky zůstane zcela nedotčená */
-.board td.name {
-    width: 30%;
-    font-size: 16px;
-    font-weight: bold;
-    overflow: visible !important;
-}
-
-/* Obal, který drží jméno a badge pohromadě jako jeden blok */
-.name-wrapper {
-    position: relative;
-    display: inline-block; /* Drží se těsně kolem jména */
-    overflow: visible !important;
-}
-
-/* Kontejner badge se napojí absolutně na pravý okraj tohoto obalu */
-.name-badge-container, .user-badge-wrapper {
-    position: absolute;
-    top: 50%;
-    left: 100%; /* Začíná přesně tam, kde končí jméno */
-    transform: translateY(-50%);
-    margin-left: 6px; /* Malá mezera 6px od textu jména */
-    display: flex;
+/* --- BADGE STYLY (Čisté zarovnání a jemný pohyb) --- */
+.name-badge-container {
+    display: inline-flex;
     align-items: center;
-    pointer-events: none;
+    gap: 4px; /* Mezera mezi jednotlivými badge */
+    margin-left: 8px;
+    vertical-align: middle;
     overflow: visible !important;
 }
 
-/* Samotný badge s jemným mikropohybem 1px */
 .badge {
-    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     pointer-events: none;
-    
-    /* Velmi jemný pohyb o cca 1px */
+    flex-shrink: 0;
     animation: microFloat 3s ease-in-out infinite;
 }
+
+/* Různé fáze pro animaci, aby se 3 badge netřepotaly úplně stejně naráz */
+.badge:nth-child(1) { animation-delay: 0s; }
+.badge:nth-child(2) { animation-delay: 1s; }
+.badge:nth-child(3) { animation-delay: 2s; }
 
 @keyframes microFloat {
     0%   { transform: translate(0px, 0px); }
@@ -798,8 +782,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     75%  { transform: translate(-0.5px, -0.3px); }
     100% { transform: translate(0px, 0px); }
 }
-
-
+</style>
 
 
 
@@ -822,24 +805,29 @@ input:checked + .slider:before { transform: translateX(18px); }
 
 
 <script>
-  function addBadge(parentId, streak) {
+  function addBadges(parentId) {
     const parent = document.getElementById(parentId);
     if (!parent) return;
 
-    const badge = document.createElement('div');
-    badge.className = 'badge';
-    
-    // Vizuál pro 15 dní
-    badge.innerText = "🔥";
-    badge.style.background = "linear-gradient(135deg, #FF512F, #DD2476)";
-    
-    // Nastavení dráhy
-    const distance = 45; // Vzdálenost od jména v pixelech
-    badge.style.setProperty('--distance', `${distance}px`);
-    badge.style.animationDuration = `10s`;
+    // Vyčištění kontejneru pro jistotu
+    parent.innerHTML = '';
 
-    parent.appendChild(badge);
+    // Definice 3 různých badge (ikonka + styl pozadí)
+    const badgeData = [
+      { icon: "🔥", background: "linear-gradient(135deg, #FF512F, #DD2476)" }, // Ohnivý (Streak)
+      { icon: "⚡", background: "linear-gradient(135deg, #f9d423, #ff4e50)" }, // Rychlostní (Blesk)
+      { icon: "👑", background: "linear-gradient(135deg, #11998e, #38ef7d)" }  // Královský (Top)
+    ];
+
+    badgeData.forEach(data => {
+      const badge = document.createElement('div');
+      badge.className = 'badge';
+      badge.innerText = data.icon;
+      badge.style.background = data.background;
+      parent.appendChild(badge);
+    });
 }
 
-addBadge('NameMainContainer', 15);
+// Spuštění po načtení elementu
+addBadges('NameMainContainer');
 </script>
