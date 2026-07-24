@@ -110,9 +110,9 @@
     <table class="board">
       <tbody>
         <tr>
-          <!-- OPRAVENO: Pevná buňka, jméno má fixní width a badge jsou absolutně uvnitř buňky -->
+          <!-- SPRÁVNÉ ŘEŠENÍ: Pevná buňka s odsazením vpravo pro badge -->
           <td class="name-cell-fixed">
-            <div class="name" id="NameMain">Name</div>
+            <span class="name" id="NameMain">Name</span>
             <div id="NameMainContainer" class="name-badge-container"></div>
           </td>            
           <td class="value-container">
@@ -227,7 +227,7 @@
   </div>
 </div>
 
-<!-- badge tameplate -->
+<!-- badge template -->
 <div id="badge-library" style="display: none;">
   <div class="badge-template" id="badge-master" style="background: linear-gradient(135deg, #FF512F, #DD2476);">
     <div class="shape-star"></div>
@@ -239,7 +239,7 @@
     <span class="label">100</span>
   </div>
 </div>
-<!-- END badge tameplate END -->
+<!-- END badge template END -->
 
 <style>
 body {
@@ -311,25 +311,27 @@ body {
     box-sizing: border-box;
 }
 
-/* PEVNÁ BUŇKA PRO JMÉNO - slouží jako referenční bod pro absolutní pozici badge */
+/* --- DŮLEŽITÉ: Pevná buňka jména s vyhrazeným prostorem vpravo pro badge --- */
 .board td.name-cell-fixed {
     width: 30%;
-    position: relative;
+    position: relative; /* Slouží jako kotva pro absolutně umístěné badge uvnitř buňky */
     text-align: left;
     padding-left: 12px;
+    padding-right: 48px; /* Rezerva vpravo, aby dlouhá jména nezajížděla pod badge */
     overflow: visible !important;
 }
 
-/* Jméno zůstává na svém přesném původním místě */
+/* Jméno je zcela nezávislé, drží na svém místě a respektuje šířku buňky */
 .board .name, .board .tpl-name {
     font-size: 16px;
     font-weight: bold;
     display: inline-block;
-    max-width: 65%; /* Nechá prostor pro badge, aby nepřelezly přes text */
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     vertical-align: middle;
+    margin: 0;
 }
 
 .value-container {
@@ -754,11 +756,11 @@ input:checked + .slider:before { transform: translateX(18px); }
     cursor: pointer;
 }
 
-/* --- BADGE UMÍSTĚNÉ ABSOLUTNĚ PŘÍMO V BUŇCE JMÉNA --- */
+/* --- BADGE UKOTVENÉ NA PRAVÉM OKRAJI BUŇKY --- */
 .name-badge-container {
     position: absolute;
     top: 50%;
-    right: 8px; /* Uchycení v pravé části buňky jména s malým odstupem od okraje */
+    right: 8px; /* Pevná vzdálenost od pravého okraje buňky jména */
     transform: translateY(-50%);
     display: flex;
     align-items: center;
