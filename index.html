@@ -110,7 +110,13 @@
     <table class="board">
       <tbody>
         <tr>
-          <td><div class="name" id="NameMain">Name</div><div id="NameMainContainer" class="name-badge-container"></div></td>            
+          <!-- OPRAVENO: Jméno a badge jsou v jednom inline-flex řádku vedle sebe -->
+          <td class="name-cell">
+            <div class="name-inline-wrapper">
+              <span class="name" id="NameMain">Name</span>
+              <div id="NameMainContainer" class="name-badge-container"></div>
+            </div>
+          </td>            
           <td class="value-container">
             <div class="label">Debt</div>
             <div class="value"><span id="DebtMain">-</span></div>
@@ -132,7 +138,12 @@
     <table class="board">
       <tbody>
         <tr>
-          <td class="name"><span class="tpl-name">Name</span></td>
+          <td class="name-cell">
+            <div class="name-inline-wrapper">
+              <span class="name tpl-name">Name</span>
+              <!-- Zde můžeš v budoucnu generovat badge i pro uživatele -->
+            </div>
+          </td>
           <td class="value-container">
             <div class="label">Debt</div>
             <div class="value"><span class="tpl-debt">-</span></div>
@@ -289,7 +300,7 @@ body {
 
 .board {
     width: 100%;
-    table-layout: fixed; /* KLÍČOVÉ: Tabulka bude mít fixní sloupce bez ohledu na obsah */
+    table-layout: fixed;
     border-collapse: collapse;
 }
 
@@ -299,22 +310,40 @@ body {
     color: #eee;
     border-right: 1px solid #333;
     overflow: visible;
-    white-space: nowrap;   /* Zabrání zalamování */
-    text-overflow: ellipsis; /* Přidá "..." pokud je jméno moc dlouhé */
+    white-space: nowrap;
+    text-overflow: ellipsis;
     box-sizing: border-box;
 }
 
-/* Definice pevných šířek sloupců */
-.board td.name {
+/* Fixní sloupec pro jméno */
+.board td.name-cell {
     width: 30%;
-    font-size: 16px; 
+    font-size: 16px;
     font-weight: bold;
-    position: relative; /* Důležité pro pozicování badge v buňce */
+    text-align: left; /* Zarovnání obsahu buňky doleva, aby bylo jméno hezky usazené */
+    padding-left: 12px;
     overflow: visible !important;
 }
 
+/* Obal, který drží jméno a badge striktně vedle sebe v jedné lajně */
+.name-inline-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    overflow: visible !important;
+}
+
+.board .name {
+    font-size: 16px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .value-container {
-    width: 23%; /* Ostatní 3 sloupce si rozdělí zbytek (cca 65% / 3) */
+    width: 23%;
 }
 
 .board td:last-child, .board td:first-child {
@@ -478,22 +507,22 @@ body {
 
 .stats-toast-mini-container {
   position: fixed;
-  left: 5%;                /* Vycentrování na střed */
-  top: -100px;              /* Startuje mimo obrazovku nahoře */
+  left: 5%;
+  top: -100px;
   z-index: 10000;
-  transition: top 0.6s cubic-bezier(0.25, 1, 0.5, 1); /* Animace na top */
+  transition: top 0.6s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .stats-toast-mini-container.show {
-  top: 15px;                /* Cílová pozice těsně pod horním okrajem */
+  top: 15px;
 }
 
 .stats-toast-mini {
   background: rgba(25, 25, 25, 0.9);
   border-bottom: 2px solid #ffca28;
   color: white;
-  padding: 8px 16px;        /* Mírně upravený padding pro lepší vzhled nahoře */
-  border-radius: 20px;      /* Zakulacený toast vypadá nahoře lépe */
+  padding: 8px 16px;
+  border-radius: 20px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.4);
   display: flex;
   align-items: center;
@@ -735,13 +764,12 @@ input:checked + .slider:before { transform: translateX(18px); }
     cursor: pointer;
 }
 
-/* --- BADGE STYLY (Čisté zarovnání a jemný pohyb) --- */
+/* --- BADGE STYLY (Čistý flexbox v jedné řadě) --- */
 .name-badge-container {
     display: inline-flex;
     align-items: center;
-    gap: 4px; /* Mezera mezi jednotlivými badge */
-    margin-left: 8px;
-    vertical-align: middle;
+    gap: 4px; /* Mezera mezi odznáčky */
+    flex-shrink: 0; /* Zabrání zmenšování ikon */
     overflow: visible !important;
 }
 
@@ -749,26 +777,26 @@ input:checked + .slider:before { transform: translateX(18px); }
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    font-size: 10px;
+    font-size: 9px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     pointer-events: none;
     flex-shrink: 0;
     animation: microFloat 3s ease-in-out infinite;
 }
 
-/* Různé fáze pro animaci, aby se 3 badge netřepotaly úplně stejně naráz */
+/* Různé fáze animace pro odznáčky, aby se nepohybovaly identicky */
 .badge:nth-child(1) { animation-delay: 0s; }
 .badge:nth-child(2) { animation-delay: 1s; }
 .badge:nth-child(3) { animation-delay: 2s; }
 
 @keyframes microFloat {
     0%   { transform: translate(0px, 0px); }
-    25%  { transform: translate(0.5px, -0.5px); }
-    50%  { transform: translate(-0.3px, 0.5px); }
-    75%  { transform: translate(-0.5px, -0.3px); }
+    25%  { transform: translate(0.4px, -0.4px); }
+    50%  { transform: translate(-0.3px, 0.4px); }
+    75%  { transform: translate(-0.4px, -0.3px); }
     100% { transform: translate(0px, 0px); }
 }
 </style>
@@ -791,14 +819,13 @@ input:checked + .slider:before { transform: translateX(18px); }
     const parent = document.getElementById(parentId);
     if (!parent) return;
 
-    // Vyčištění kontejneru pro jistotu
     parent.innerHTML = '';
 
-    // Definice 3 různých badge (ikonka + styl pozadí)
+    // 3 různé badge umístěné čistě vedle jména
     const badgeData = [
-      { icon: "🔥", background: "linear-gradient(135deg, #FF512F, #DD2476)" }, // Ohnivý (Streak)
-      { icon: "⚡", background: "linear-gradient(135deg, #f9d423, #ff4e50)" }, // Rychlostní (Blesk)
-      { icon: "👑", background: "linear-gradient(135deg, #11998e, #38ef7d)" }  // Královský (Top)
+      { icon: "🔥", background: "linear-gradient(135deg, #FF512F, #DD2476)" },
+      { icon: "⚡", background: "linear-gradient(135deg, #f9d423, #ff4e50)" },
+      { icon: "👑", background: "linear-gradient(135deg, #11998e, #38ef7d)" }
     ];
 
     badgeData.forEach(data => {
@@ -810,6 +837,5 @@ input:checked + .slider:before { transform: translateX(18px); }
     });
 }
 
-// Spuštění po načtení elementu
 addBadges('NameMainContainer');
 </script>
